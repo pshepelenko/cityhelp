@@ -17,6 +17,12 @@
 import Vue from 'vue';
 import DashboardPlugin from './plugins/dashboard-plugin';
 import App from './App.vue';
+import axios from 'axios'
+import moment from 'moment'
+
+Vue.prototype.$http = axios;
+Vue.prototype.moment = moment;
+moment.locale('ru');
 
 // router setup
 import router from './routes/router';

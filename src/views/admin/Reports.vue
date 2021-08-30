@@ -13,45 +13,28 @@
                 <h6 class="text-light text-uppercase ls-1 mb-1">Статистика</h6>
                 <h5 class="h3 text-white mb-0">Получение и обработка отчетов от исполнителей</h5>
               </b-col>
-              <b-col>
-                <b-nav class="nav-pills justify-content-end">
-                  <b-nav-item
-                       class="mr-2 mr-md-0"
-                       :active="bigLineChart.activeIndex === 0"
-                       link-classes="py-2 px-3"
-                       @click.prevent="initBigChart(0)">
-                      <span class="d-none d-md-block">Месяц</span>
-                      <span class="d-md-none">M</span>
-                  </b-nav-item>
-                  <b-nav-item
-                    link-classes="py-2 px-3"
-                    :active="bigLineChart.activeIndex === 1"
-                    @click.prevent="initBigChart(1)"
-                  >
-                    <span class="d-none d-md-block">Неделя</span>
-                    <span class="d-md-none">W</span>
-                  </b-nav-item>
-                </b-nav>
-              </b-col>
+              
             </b-row>
             <line-chart
               :height="350"
               ref="bigChart"
-              :chart-data="bigLineChart.chartData"
-              :extra-options="bigLineChart.extraOptions"
+              :chart-data="bigLineChart.chartData"          
               
             >
             </line-chart>
+          
+
+          
           </card>
         </b-col>
 
        
       </b-row>
       <!-- End charts-->
-
+      
       <!--Tables-->
       <b-row class="mt-5">
-        <light-table />
+        <light-table/>
       </b-row>
       
       <!--End tables-->
@@ -61,75 +44,81 @@
 </template>
 <script>
   // Charts
-  import * as chartConfigs from '@/components/Charts/config';
-  import LineChart from '@/components/Charts/LineChart';
-  import BarChart from '@/components/Charts/BarChart';
-
-  // Components
-  import BaseProgress from '@/components/BaseProgress';
-  import StatsCard from '@/components/Cards/StatsCard';
-
-  // Tables
-  import LightTable from "./Reports/ReportsList"; 
-
+   import LineChart from '@/components/Charts/LineChart';
+   // Tables
+    import LightTable from "./Reports/ReportsList"; 
+    import moment from 'moment';
 
 
   export default {
     components: {
       LineChart,
-      BarChart,
-      BaseProgress,
-      StatsCard,
       LightTable          
     },
     data() {
       return {
+        reports: [],
         bigLineChart: {
-          allData: [
-            [0, 20, 10, 30, 15, 40, 20, 60, 60],
-            [0, 20, 5, 25, 10, 30, 15, 40, 40]
-          ],
-          activeIndex: 0,
           chartData: {
-            datasets: [
-              {
-                label: 'Performance',
-                data: [0, 20, 10, 30, 15, 40, 20, 60, 60],
-              }
-            ],
-            labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          },
-          extraOptions: chartConfigs.blueChartOptions,
+                    
+          },          
         },
-        redBarChart: {
-          chartData: {
-            labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-              label: 'Sales',
-              data: [25, 20, 30, 22, 17, 29]
-            }]
-          },
-          extraOptions: chartConfigs.blueChartOptions
-        }
+        
       };
     },
+    
     methods: {
       initBigChart(index) {
-        let chartData = {
+          let date = new Date();
+          date.setDate(date.getDate() - 9);
+          let chartData = {
           datasets: [
             {
-              label: 'Performance',
-              data: this.bigLineChart.allData[index]
-            }
+              label: 'Получено',
+              data: [],
+            },
+            {
+              label: 'Проверено',
+              data: [],
+              borderColor: 'rgb(45, 232, 192)',
+              backgroundColor: 'rgb(45, 232, 192)',
+              fill: false,
+            },
+
           ],
-          labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          labels: [],
+            
         };
-        this.bigLineChart.chartData = chartData;
-        this.bigLineChart.activeIndex = index;
-      }
+        this.$http.get('http://127.0.0.1:3000/statistics/',{},
+         {
+            headers: {
+              // remove headers
+            }
+          })
+          .then(response => {
+            console.log(response.data);
+            
+            for (let i = 8; i >= 0; i--) {
+              chartData.datasets[0].data.push(response.data[i].reportssubmitted);
+              chartData.datasets[1].data.push(response.data[i].reportschecked);
+              chartData.labels.push(moment(date.setDate(date.getDate() + 1)).format('DD.MM'));
+            };
+            this.bigLineChart.chartData = chartData;
+          })
+          .catch (error => {
+              console.log('aaa');
+          })
+
+
+        
+        
+      },
+      
+    
     },
     mounted() {
-      this.initBigChart(0);
+      this.initBigChart();
+      //this.initTable();
     }
   };
 </script>

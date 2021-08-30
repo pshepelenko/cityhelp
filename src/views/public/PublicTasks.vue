@@ -3,18 +3,18 @@
 
     <base-header class="pb-6 pb-8 pt-5 pt-md-8 bg-gradient-success">
       <!-- Card stats -->
-      <b-row class="rewards-list">
+      <b-row class="active-tasks-list">
             <div class="header-first"> Выбранные задания </div>
             <b-card-group deck>
-                <b-col sm="12" md="4" v-for="item in tasks" :key="item.id">
+                <b-col sm="12" md="4" v-for="item in tasks" :key="item.taskid">
                     <b-card  img-top>
-                         <b-card-image  > 
+                         <b-card-img  > 
                             <gmap-map :center="{lat: 1.38, lng: 103.8}" :zoom="12" style="width: 100%; height: 250px">
                               <gmap-polygon :paths="item.paths" :editable="false" >
                               </gmap-polygon>
                             </gmap-map>
-                         </b-card-image>
-                        <div class="mt-3"><router-link :to="'/tasks/'+item.id"><b-card-title>  {{item.title}} </b-card-title></router-link> </div>
+                         </b-card-img>
+                        <div class="mt-3"><router-link :to="'/tasks/'+item.taskid"><b-card-title>  {{item.title}} </b-card-title></router-link> </div>
                         <b-card-text> {{item.description}} </b-card-text>                        
                     </b-card>
                 </b-col>
@@ -34,7 +34,7 @@
        <b-row id="map">
            <b-col>
            <gmap-map :center="{lat: 56.18, lng: 36.97}" :zoom="13" style="width: 100%; height: 500px">
-              <gmap-polygon v-for="item in tasksMap" :key="item.id" :paths="item.paths" :editable="false" @paths_changed="updateEdited($event)" @click="selectTask(item.id)" />
+              <gmap-polygon v-for="item in availableTasks" :key="item.id" :paths="item.paths" :editable="false" @paths_changed="updateEdited($event)" @click="selectTask(item.id)" />
               
             </gmap-map>
            </b-col>
@@ -42,7 +42,7 @@
     
     <b-container fluid class="mt-7">
       <b-row class="mt-5">
-        <light-table />
+        <light-table :tasks="availableTasks" />
       </b-row>
       
       <!--End tables-->
@@ -62,33 +62,16 @@
     },
     data() {
       return {
+        tasks: [
+                
+        ],
+        availableTasks: [
+                
+        ]
       };
     },
     computed: {
-        tasks() {
-            let array = [
-                {
-                    id: '12321',
-                    title: 'Убрать мусор на улице Московской',
-                    description: 'Билет на любой спектакль театра имени Станиславского в июне 2022 года',
-                    paths: [ {lat: 1.380, lng: 103.800}, {lat:1.380, lng: 103.810}, {lat: 1.390, lng: 103.810}, {lat: 1.390, lng: 103.800} ]
-                },
-                {
-                    id: '12321',
-                    title: 'Опрос по поводу изменения транспортной развязки на ул. Кирова',
-                    description: 'Возможность бесплатной аренды 4 соток земли в Солнечногорском районе на срок до 3 лет',
-                    paths: [ {lat: 1.380, lng: 103.800}, {lat:1.380, lng: 103.810}, {lat: 1.390, lng: 103.810}, {lat: 1.390, lng: 103.800} ]
-                },
-                {
-                    id: '12321',
-                    title: 'Сфотографировать состояние дорожного полотна на ул. Мяснцикой',
-                    description: 'Купон на скидку в сети "Магнит" дает скидку до 10% и дейставует в течение 3 месяцев',
-                    paths: [ {lat: 1.380, lng: 103.800}, {lat:1.380, lng: 103.810}, {lat: 1.390, lng: 103.810}, {lat: 1.390, lng: 103.800} ]
-                }
-                 
-            ];
-            return array;
-        },
+        
         tasksMap() {
 
         
@@ -109,9 +92,39 @@
       selectTask(taskId) {
               console.log('Task is selected, id=' + taskId);
               this.$router.push('/tasks/' + taskId);
-      }
+      },
+      getActiveTasks() {
+              var userInfo = JSON.parse(localStorage.getItem('user'));
+              console.log('the user id is ' + userInfo.login);
+              this.$http.get('http://127.0.0.1:3000/tasks/active/users/' + userInfo.login,null,
+              {
+                headers: {
+                  // remove headers
+                }
+              })
+              .then(response => {
+                this.tasks = response.data;
+                console.log(response.data);
+              })
+      },
+      getAvailableTasks() {
+              var userInfo = JSON.parse(localStorage.getItem('user'));
+              console.log('the user id is ' + userInfo.login);
+              this.$http.get('http://127.0.0.1:3000/tasks/available/users/' + userInfo.login,null,
+              {
+                headers: {
+                  // remove headers
+                }
+              })
+              .then(response => {
+                this.availableTasks = response.data;
+                console.log(response.data);
+              })
+      },
     },
     mounted() {
+      this.getActiveTasks();
+      this.getAvailableTasks();
     }
   };
 </script>
@@ -120,6 +133,10 @@
   padding-left: 0px;
   padding-right: 0px;
 
+}
+.active-tasks-list {
+  display: flex;
+  flex-direction: column;
 }
 .header-first {
   color: white;

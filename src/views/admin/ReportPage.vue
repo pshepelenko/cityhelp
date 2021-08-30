@@ -6,19 +6,18 @@
     <b-container fluid class="mt--7">
         <b-row class="task-card">
            <b-card img-top class="w-75">
-                <b-card-image > 
-                     <gmap-map :center="{lat: 1.38, lng: 103.8}" :zoom="12" style="width: 100%; height: 500px">
-                        <gmap-polygon :paths="paths" :editable="false" >
-                        </gmap-polygon>
-                      </gmap-map>
-                </b-card-image>
+                <gmap-map :center="{lat: 56.18, lng: 36.97}" :zoom="13" style="width: 100%; height: 500px">
+                    <gmap-polygon :paths="reportInfo.paths" :editable="false" />
+                </gmap-map>
                 <b-card-title class="mt-3">Отчет по выполнению задания</b-card-title>
-                <b-card-text class="card-text"> <div class="topic"> Задание </div> <router-link :to="'/admin/tasks/'+reportInfo.taskId">{{reportInfo.task}}</router-link></b-card-text>
-                <b-card-text class="card-text"> <div class="topic"> ID отчета </div> {{reportInfo.id}}</b-card-text>
-                <b-card-text class="card-text"> <div class="topic"> Текст отчета </div> {{reportInfo.text}}</b-card-text>
+                <b-card-text class="card-text"> <div class="topic"> Задание </div> <router-link :to="'/admin/tasks/'+reportInfo.taskid">{{reportInfo.taskTitle}}</router-link></b-card-text>
+                <b-card-text class="card-text"> <div class="topic"> ID отчета </div> {{reportInfo.reportid}}</b-card-text>
+                <b-card-text class="card-text"> <div class="topic"> Текст отчета </div> {{reportInfo.description}}</b-card-text>
                 <b-card-text class="card-text"> <div class="topic"> Награда </div> {{reportInfo.reward}} баллов</b-card-text>
-                <b-card-text class="card-text"> <div class="topic"> Дата отправления </div> {{reportInfo.date}}</b-card-text>
-                <b-button variant="primary"> Подтвердить </b-button> <b-button variant="warning"> Отклонить </b-button>
+                <b-card-text class="card-text"> <div class="topic"> Дата отправления </div> {{moment(reportInfo.creationdate).format('DD/MM/YYYY')}}</b-card-text>
+                <b-card-text class="card-text"> <div class="topic"> Статус </div> <StatusText :status="reportInfo.status" /></b-card-text>
+                <b-button v-if="reportInfo.status === 'На обработке'" variant="primary" @click="approveReport(reportInfo.reportid)"> Подтвердить </b-button> 
+                <b-button v-if="reportInfo.status === 'На обработке'" variant="warning" @click="rejectReport(reportInfo.reportid)"> Отклонить </b-button>
             </b-card> 
                
         </b-row>
@@ -53,39 +52,65 @@
   </div>
 </template>
 <script>
-  import LightTable from "./Reports/ReportsList"; 
-
+  import StatusText from '@/components/StatusText.vue';
+  
   export default {
     components: {
-        LightTable
+      StatusText,
     },
     data() {
       return {
-        paths: [ {lat: 1.380, lng: 103.800}, {lat:1.380, lng: 103.810}, {lat: 1.390, lng: 103.810}, {lat: 1.390, lng: 103.800} ]
+        reportInfo: {},
+        
       }
     },
     computed: {
-        reportInfo() {
-            let info = {
-                    id: '12321',
-                    task: 'Убрать мусор на улице Московской',
-                    category: 'Экология',
-                    text: 'Собрали мусор на улице Московской. Фотографии во вложении.',
-                    reward: 10,
-                    date: '10/09/2021',
-                    taskId: 1,
-                    userName: 'Anna Ivanova',
-                    userId: 21321,
-                };
-            return info;
-        },
+        
         uploadedPhotos() {
             return ['https://picsum.photos/1024/480/?image=54', 'https://picsum.photos/1024/480/?image=54', 'https://picsum.photos/1024/480/?image=54']
         }
     },
     methods: {
+      approveReport(reportId) {
+        this.$http.post('http://127.0.0.1:3000/reports/approve', {reportId: reportId},
+          {
+            headers: {
+            // remove headers
+          }
+          })
+          .then(response => {
+            this.reportInfo.status='Подтвержден';        
+          })
+          .catch (error => {
+            console.log('aaa');
+          })  
+      },
+      rejectReport(reportId) {
+        this.$http.post('http://127.0.0.1:3000/reports/reject', {reportId: reportId},
+          {
+            headers: {
+            // remove headers
+          }
+          })
+          .then(response => {
+            this.reportInfo.status='Отклонен';        
+          })
+          .catch (error => {
+            console.log('aaa');
+          })              
+      }
     },
     mounted() {
+      this.$http.get('http://127.0.0.1:3000/reports/' + this.$route.params.id,null,
+         {
+            headers: {
+              // remove headers
+            }
+          })
+          .then(response => {
+            this.reportInfo = response.data;
+            console.log(response.data);
+          })
     }
   };
 </script>

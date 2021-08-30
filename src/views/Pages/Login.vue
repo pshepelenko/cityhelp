@@ -65,13 +65,12 @@
                   <base-input alternative
                               class="mb-3"
                               name="Password"
-                              :rules="{required: true, min: 6}"
                               prepend-icon="ni ni-lock-circle-open"
                               type="password"
                               placeholder="Пароль"
                               v-model="model.password">
                   </base-input>
-
+                  <div class="text-danger" v-if="!authStatus">Указанный e-mail отсутсвует в базе либо указанный пароль неверен</div>
                   <div class="text-center">
                     <base-button type="primary" native-type="submit" class="my-4">Войти</base-button>
                   </div>
@@ -81,7 +80,7 @@
           </b-card>
           <b-row class="mt-3">
             <b-col cols="6">
-              <router-link to="/dashboard" class="text-light"><small>Забыли пароль?</small></router-link>
+              <router-link to="/" class="text-light"><small>Забыли пароль?</small></router-link>
             </b-col>
             <b-col cols="6" class="text-right">
               <router-link to="/register" class="text-light"><small> Зарегистрироваться</small></router-link>
@@ -100,28 +99,55 @@
           email: '',
           password: '',
           rememberMe: false
-        }
+        },
+        message: '',
+        authStatus: true,
       };
     },
     methods: {
       onSubmit() {
-        if (this.model.email === "admin@aa.ru") {
-          let user = {
-            login: 'admin',
-            admin: true
-          }
-          console.log("admin is set");
-          localStorage.setItem('user',JSON.stringify(user));
-          this.$router.push('/admin/tasks/');
-        } else {
-          let user = {
-            login: 'user',
-            admin: false
-          }
-          localStorage.setItem('user',JSON.stringify(user));
-          console.log("user is set");
-          this.$router.push('/tasks/');
-        }
+        this.$http.post('http://127.0.0.1:3000/auth/login', 
+           {
+             login: this.model.email,
+             password: this.model.password,
+           },
+          {
+            headers: {
+              // remove headers
+            }
+          })
+          .then(response => {
+            console.log(response.data);
+            if (response.data.isAdmin) {
+              let user = {
+                login: this.model.email,
+                admin: true,
+                name: response.data.name,
+                surname: response.data.surname,
+                balance: response.data.balance,
+              }
+              localStorage.setItem('user',JSON.stringify(user));
+              this.$router.push('/admin/tasks/');
+            } else {
+              let user = {
+                login: this.model.email,
+                admin: false,                
+                name: response.data.name,
+                surname: response.data.surname,
+                balance: response.data.balance,
+              }
+              localStorage.setItem('user',JSON.stringify(user));
+              console.log("user is set");
+              this.$router.push('/tasks/');
+            }    
+          })
+          .catch (error => {
+            console.log('aaa');
+            this.authStatus=false;
+          })
+
+
+        
           
         // this will be called only after form is valid. You can do api call here to login
       }

@@ -7,11 +7,11 @@
             <div class="header-first"> Заработанные награды </div>
             <b-card-group deck>
                 <b-col sm="12" md="4" v-for="item in rewardsReceived" :key="item.id">
-                    <b-card img-src="https://picsum.photos/300/300/?image=41" img-top>
-                        <router-link :to="'/rewards/'+item.id"><b-card-title>  {{item.title}} </b-card-title></router-link>
+                    <b-card :img-src="item.picturelink" img-top>
+                        <router-link :to="'/rewards/'+item.rewardid"><b-card-title>  {{item.title}} </b-card-title></router-link>
                         <b-card-text> {{item.description}}</b-card-text>
                         <b-card-text class="card-text"> <div class="topic"> Стоимость </div> {{item.price}} баллов</b-card-text>
-                        <b-button class="mx-auto" :to="'/rewards/'+item.id">Посмотреть </b-button>
+                        <b-button class="mx-auto" :to="'/rewards/'+item.rewardid">Посмотреть </b-button>
                     </b-card>
                 </b-col>
             </b-card-group>
@@ -25,11 +25,11 @@
       
         <b-card-group deck>
                 <b-col sm="12" md="4" v-for="item in rewardsAvailable" :key="item.id">
-                    <b-card img-src="https://picsum.photos/300/300/?image=41" img-top>
-                        <router-link :to="'/rewards/'+item.id"><b-card-title>  {{item.title}} </b-card-title></router-link>
+                    <b-card :img-src="item.picturelink" img-top>
+                        <router-link :to="'/rewards/'+item.rewardid"><b-card-title>  {{item.title}} </b-card-title></router-link>
                         <b-card-text> {{item.description}}</b-card-text>
                         <b-card-text class="card-text"> <div class="topic"> Стоимость </div> {{item.price}} баллов</b-card-text>
-                        <b-button class="mx-auto" :to="'/rewards/'+item.id">Посмотреть </b-button>
+                        <b-button class="mx-auto" :to="'/rewards/'+item.rewardid">Посмотреть </b-button>
                     </b-card>
                 </b-col>
             </b-card-group>
@@ -40,76 +40,52 @@
   </div>
 </template>
 <script>
-  // Tables
-  import LightTable from "./Tasks/PublicTaskList"; 
 
 
 
   export default {
     components: {
-      LightTable          
     },
     data() {
       return {
+          rewardsReceived: [],
+          rewardsAvailable: [],
       };
     },
-    computed: {
-        rewardsReceived() {
-            let array = [
-                {
-                    id: '12321',
-                    title: 'Билет в театр имени Станиславского',
-                    description: 'Билет на любой спектакль театра имени Станиславского в июне 2022 года'
-                },
-                {
-                    id: '12321',
-                    title: 'Бесплатная аренда земли',
-                    description: 'Возможность бесплатной аренды 4 соток земли в Солнечногорском районе на срок до 3 лет'
-                },
-                {
-                    id: '12321',
-                    title: 'Скидка в магазинах сети "Магнит"',
-                    description: 'Купон на скидку в сети "Магнит" дает скидку до 10% и дейставует в течение 3 месяцев'
-                }
-                 
-            ];
-            return array;
-        },
-        rewardsAvailable() {
-            let array = [
-                {
-                    id: '12321',
-                    title: 'Билет в театр имени Станиславского',
-                    description: 'Билет на любой спектакль театра имени Станиславского в июне 2022 года'
-                },
-                {
-                    id: '12321',
-                    title: 'Бесплатная аренда земли',
-                    description: 'Возможность бесплатной аренды 4 соток земли в Солнечногорском районе на срок до 3 лет'
-                },
-                {
-                    id: '12321',
-                    title: 'Скидка в магазинах сети "Магнит"',
-                    description: 'Купон на скидку в сети "Магнит" дает скидку до 10% и дейставует в течение 3 месяцев'
-                },
-                {
-                    id: '12321',
-                    title: 'Скидка в магазинах сети "Магнит"',
-                    description: 'Купон на скидку в сети "Магнит" дает скидку до 10% и дейставует в течение 3 месяцев'
-                },
-                {
-                    id: '12321',
-                    title: 'Скидка в магазинах сети "Магнит"',
-                    description: 'Купон на скидку в сети "Магнит" дает скидку до 10% и дейставует в течение 3 месяцев'
-                },
-                 
-            ];
-            return array;
-        }
-    },
+    
     methods: {
+        getActiveRewards() {
+              var userInfo = JSON.parse(localStorage.getItem('user'));
+              console.log('the user id is ' + userInfo.login);
+              this.$http.get('http://127.0.0.1:3000/rewards/active/users/' + userInfo.login,null,
+              {
+                headers: {
+                  // remove headers
+                }
+              })
+              .then(response => {
+                this.rewardsReceived = response.data;
+                console.log(response.data);
+              })
+      },
+      getAvailableRewards() {
+              var userInfo = JSON.parse(localStorage.getItem('user'));
+              console.log('the user id is ' + userInfo.login);
+              this.$http.get('http://127.0.0.1:3000/rewards/available/users/' + userInfo.login,null,
+              {
+                headers: {
+                  // remove headers
+                }
+              })
+              .then(response => {
+                this.rewardsAvailable = response.data;
+                console.log(response.data);
+              })
+      },
     },
     mounted() {
+        this.getActiveRewards();
+        this.getAvailableRewards();
     }
   };
 </script>

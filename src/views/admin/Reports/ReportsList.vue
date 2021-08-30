@@ -4,21 +4,24 @@
             <h3 class="mb-0">Список отчетов по заданиям</h3>
         </b-card-header>
 
-        <el-table class="table-responsive table"
+        
+
+        <el-table 
+                  class="table-responsive table"
                   header-row-class-name="thead-light"
-                  :data="projects">
+                  :data="reports">
             
 
             <el-table-column label="ID отчета"
                 min-width="130px"
-                prop="id">
+                prop="reportid">
             </el-table-column>
 
             <el-table-column label="Название задания"
                              prop="title"
                              min-width="342px">
                 <template v-slot="{row}">
-                        <router-link :to="'/admin/tasks/'+ row.id" class="font-weight-600 name mb-0 text-sm">{{row.title}}</router-link>                    
+                        <router-link :to="'/admin/tasks/'+ row.taskid" :key="taskTitleMounted" class="font-weight-600 name mb-0 text-sm">{{getTaskTitle(row.taskid)}}{{taskTitle}}</router-link>                    
                 </template>
             </el-table-column>
 
@@ -27,82 +30,112 @@
                              prop="status">
                 <template v-slot="{row}">
                     <badge class="badge-dot mr-4" type="">
-                        <i :class="`bg-${row.statusType}`"></i>
-                        <span class="status" :class="`text-${row.statusType}`">{{row.status}}</span>
+                        <StatusText :status="row.status" />
                     </badge>
                 </template>
             </el-table-column>
 
             <el-table-column label="Создан" 
                 min-width="120px"
-                prop="creationDate"
+                prop="creationdate"
                 >
                 <template v-slot="{row}">
-                    {{row.creationDate}}
+                    {{moment(row.creationdate).format('DD/MM/YYYY')}}
                 </template>
             </el-table-column>
 
             <el-table-column label=""
                 min-width="220px">
                 <template v-slot="{row}">
-                    <b-button variant="secondary" :to="'/admin/reports/'+row.id">Посмотреть </b-button>
+                    <b-button variant="secondary" :to="'/admin/reports/'+row.reportid">Посмотреть </b-button>
                 </template>
             </el-table-column>
 
+            <template slot="empty">
+                <div style="width: 700px;" v-if="noReports"> Отчеты по данному заданию пока что не поступали ... </div>
+            </template>    
             
         </el-table>
 
         <b-card-footer class="py-4 d-flex justify-content-end">
-            <base-pagination v-model="currentPage" :per-page="10" :total="50"></base-pagination>
+            
         </b-card-footer>
     </b-card>
 </template>
 <script>
   
   import { Table, TableColumn} from 'element-ui'
+  import StatusText from '@/components/StatusText.vue'  
+
   export default {
     name: 'light-table',
     props: {
-        id: String
+        taskId: String,
     },
     components: {
       [Table.name]: Table,
-      [TableColumn.name]: TableColumn
+      [TableColumn.name]: TableColumn,
+      StatusText
     },
     data() {
       return {
-        projects: [
-        {
-            id: '1212',
-            title: 'Убрать мусор на улице Московской',
-            creationDate: '22.11.2021',
-            status: 'В работе',
-            statusType: 'warning',
-            reportsUnchecked: 3,
-            reportsTotal: 10
-        },
-        {
-            id: '12312',
-            title: 'Опрос по поводу изменения транспортной развязки на ул. Кирова',
-            creationDate: '01.06.2021',
-            status: 'Завершено',
-            statusType: 'success',
-            reportsUnchecked: 0,
-            reportsTotal: 12
-        },
-         {
-            id: '231',
-            title: 'Сфотографировать состояние дорожного полотна на ул. Мяснцикой',
-            creationDate: '22.11.2021',
-            status: 'Завершено',
-            statusType: 'success',
-            reportsUnchecked: 2,
-            reportsTotal: 8
-        },	
-
-        ],
+        noReports: true,
+        taskTitleMounted: 0,
+        taskTitle:'',
+        reports: [],
         currentPage: 1
       };
+    },
+    methods: {
+        getParticularReports(taskId) {
+        this.$http.get('http://127.0.0.1:3000/reports/tasks/' + taskId,null,
+         {
+            headers: {
+              // remove headers
+            }
+          })
+          .then(response => {
+            this.reports = response.data;
+            this.noReports = false;
+          })
+          .catch (error => {
+              console.log('aaa');
+              this.authStatus=false;
+          })
+        },
+        getTaskTitle(taskId) {
+            this.$http.get('http://127.0.0.1:3000/tasks/' + taskId,null,
+         {
+            headers: {
+              // remove headers
+            }
+          })
+          .then(response => {
+            this.taskTitle = response.data[0].title;
+          })
+          .catch (error => {
+              console.log('aaa');             
+          })        
+        },
+        getAllReports() {
+        this.$http.get('http://127.0.0.1:3000/reports/',null,
+         {
+            headers: {
+              // remove headers
+            }
+          })
+          .then(response => {
+            this.reports = response.data;
+            this.noReports = false;
+          })
+          .catch (error => {
+              console.log('aaa');
+              this.authStatus=false;
+          })
+        }
+    },
+    mounted() {
+        (this.taskId) ? this.getParticularReports(this.taskId) : this.getAllReports();        
     }
   }
 </script>

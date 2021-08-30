@@ -8,25 +8,21 @@
     <b-container fluid class="mt--7">
         <b-row class="task-card">
            
-            <b-card img-top img-start class="w-75">
-                <b-card-img class="mb-3" :top="true" :start="true" v-b-modal.modal-1 src="https://city-helper.herokuapp.com/static/media/img1.fe321597.jpg" />
-                <b-card-text class="card-text"> <div class="topic"> Название </div> {{taskInfo.title}}</b-card-text>
-                <b-card-text class="card-text"> <div class="topic"> Описание </div> {{taskInfo.description}}</b-card-text>
-                <b-card-text class="card-text"> <div class="topic"> Стоимость </div> {{taskInfo.price}}</b-card-text>
+            <b-card img-top img-start class="w-50">
+                <b-card-img class="mb-3" :top="true" :start="true"  :src="rewardInfo.picturelink" />
+                <b-card-text class="card-text"> <div class="topic"> Название </div> {{rewardInfo.title}}</b-card-text>
+                <b-card-text class="card-text"> <div class="topic"> Описание </div> {{rewardInfo.description}}</b-card-text>
+                <b-card-text class="card-text"> <div class="topic"> Стоимость </div> {{rewardInfo.price}}</b-card-text>
                 
                 <div class="bottom-row">            
-                  <b-button variant="primary" type="submit" >Купить </b-button> 
+                  <b-button v-if="isOwned == false"  @click="buyReward()" variant="primary" type="submit" >Купить </b-button> 
                 </div>
               </b-card> 
             
         </b-row>
        
     </b-container>
-     <b-modal id="modal-1" title="Пожалуйста загрузите изображение" ok-only>
-                
-                  <b-button class="mx-auto">Загрузите фото </b-button> 
-                
-    </b-modal>  
+      
   </div>
 </template>
 <script>
@@ -38,23 +34,68 @@
     },
     data() {
       return {
+        rewardInfo: {},
+        isOwned: false,
+        activeRewards: [],
+        rewardsList: [],
       }
     },
-    computed: {
-        taskInfo() {
-            let info = {
-                    id: '12321',
-                    title: 'Билет в театр имени Станиславского',
-                    category: 'Экология',
-                    description: 'Билет на любой спектакль театра имени Станиславского в июне 2022 года.',
-                    price: 10
-                };
-            return info;
-        }
-    },
+   
     methods: {
+      buyReward() {
+         let user = JSON.parse(localStorage.getItem('user'));
+         this.$http.post('http://127.0.0.1:3000/rewards/buy', {rewardId: this.rewardInfo.rewardid, userId: user.login},
+          {
+            headers: {
+            // remove headers
+          }
+          })
+          .then(response => {
+            console.log('success ');
+            this.isOwned=true;        
+            let user = JSON.parse(localStorage.getItem('user'));
+            user.balance = user.balance - this.rewardInfo.price;
+            console.log (user);
+            localStorage.setItem('user',JSON.stringify(user));
+          })
+          .catch (error => {
+            console.log(error);
+          })
+
+      },
+      getRewardData() {
+              var userInfo = JSON.parse(localStorage.getItem('user'));
+              console.log('the user id is ' + userInfo.login);
+              this.$http.get('http://127.0.0.1:3000/rewards/active/users/' + userInfo.login,null,
+              {
+                headers: {
+                  // remove headers
+                }
+              })
+              .then(response => {
+                this.activeRewards = response.data;
+                //console.log(response.data);
+                for (let item of this.activeRewards) {
+                  this.rewardsList.push(item.rewardid)
+                }
+                console.log(this.rewardsList);
+                this.$http.get('http://127.0.0.1:3000/rewards/' + this.$route.params.id,null,
+                  {
+                      headers: {
+                        // remove headers
+                      }
+                    })
+                    .then(response => {
+                      this.rewardInfo = response.data[0];
+                      if (this.rewardsList.includes(this.rewardInfo.rewardid)) {
+                        this.isOwned = true;
+                      }
+                    })
+              })
+      },
     },
     mounted() {
+      this.getRewardData();
     }
   };
 </script>

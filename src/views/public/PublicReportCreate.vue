@@ -10,7 +10,7 @@
     <b-container fluid class="mt--8">
       
         <b-col xl="10" class="mx-auto ">
-          <ReportCreateForm />
+          <ReportCreateForm taskId="8"/>
         </b-col>
       
     </b-container>
@@ -32,22 +32,7 @@
         }
     },
     methods: {
-          updateEdited(mvcArray) {
-            let paths = [];
-            for (let i=0; i<mvcArray.getLength(); i++) {
-              let path = [];
-              for (let j=0; j<mvcArray.getAt(i).getLength(); j++) {
-                let point = mvcArray.getAt(i).getAt(j);
-                path.push({lat: point.lat(), lng: point.lng()});
-              }
-              paths.push(path);
-            }
-            this.edited = paths;
-          },
-          selectTask(taskId) {
-              console.log('Task is selected, id=' + taskId);
-              this.$router.push('/admin/tasks/1');
-          }
+          
         }
    
   };

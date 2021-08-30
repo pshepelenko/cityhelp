@@ -5,22 +5,40 @@
     
     <b-container fluid class="mt--7">
         <b-row class="task-card">
-           <b-form>
-            <b-card img-top img-start class="w-75">
-                <b-card-img class="mb-3" :top="true" :start="true" v-b-modal.modal-1 src="https://city-helper.herokuapp.com/static/media/img1.fe321597.jpg" />
-                <div class="form-header"> Название </div>
+           <b-col md="12" sm="12">
+              <b-card img-top img-start class="w-75">
+                <b-form @submit.prevent="saveEdits()">
+                <b-row class="">
+                  <div class="picture" v-b-modal.modal-1 :style="{ backgroundImage: 'url(' + rewardInfo.picturelink + ')' }"  >
+                    <div class="opacity" >
+                        <div class="header">Нажмите, чтобы поменять фото </div>
+                    </div>
+                  </div>
+                </b-row>
+
+                <b-modal id="modal-1" title="Пожалуйста загрузите изображение" ok-only>
+                  
+                   <input type="file" @change="onFileChange" />
+                  
+                  <div id="preview">
+                    <img v-if="imageChanged" :src="rewardInfo.picturelink" />
+                  </div>
+                
+                </b-modal>               
+                
+                <div class="form-header mt-5"> Название </div>
                 <b-form-input
                   class="mb-3 mt-1"
                   type="text"
                   label="Название"
                   placeholder=""
-                  v-model="taskInfo.title"
+                  v-model="rewardInfo.title"
                 >
                 </b-form-input>
                 <div class="form-header"> Описание </div>
                 
                   <!--  <label class="form-control-label">About Me</label> -->
-                  <b-form-textarea rows="4" class="mb-3 mt-1" v-model="taskInfo.description" id="about-form-textaria" placeholder="A few words about you ..."></b-form-textarea>
+                  <b-form-textarea rows="4" class="mb-3 mt-1" v-model="rewardInfo.description" id="about-form-textaria" placeholder="A few words about you ..."></b-form-textarea>
                 
                 <div class="form-header"> Стоимость </div>
                 <b-form-input
@@ -28,50 +46,79 @@
                   type="text"
                   label="Стоимость"
                   placeholder=""
-                  v-model="taskInfo.price"
+                  v-model="rewardInfo.price"
                 >
                 </b-form-input>
                 <div class="bottom-row">            
-                  <b-button > Отмена </b-button> <b-button variant="primary" type="submit" >Сохранить </b-button> 
+                  <b-button to="/admin/rewards/"> Отмена </b-button> <b-button variant="primary" type="submit" >Сохранить </b-button> 
                 </div>
+              </b-form>   
               </b-card> 
-           </b-form>   
+           
+           </b-col>      
         </b-row>
        
     </b-container>
-     <b-modal id="modal-1" title="Пожалуйста загрузите изображение" ok-only>
-                
-                  <b-button class="mx-auto">Загрузите фото </b-button> 
-                
-    </b-modal>  
+       
   </div>
 </template>
 <script>
-  
+  import ImageUploader from 'vue-image-upload-resize'
 
   export default {
     components: {
-        
+        ImageUploader
     },
     data() {
       return {
+        imageChanged: false,
+        rewardInfo: {},
       }
     },
-    computed: {
-        taskInfo() {
-            let info = {
-                    id: '12321',
-                    title: 'Билет в театр имени Станиславского',
-                    category: 'Экология',
-                    description: 'Билет на любой спектакль театра имени Станиславского в июне 2022 года.',
-                    price: 10
-                };
-            return info;
-        }
-    },
+    
     methods: {
+      onFileChange(e) {
+        const file = e.target.files[0];
+        this.imageChanged = true;
+        this.rewardInfo.picturelink = URL.createObjectURL(file);;
+      },
+      
+      showCurrentData() { 
+        this.$http.get('http://127.0.0.1:3000/rewards/'+this.$route.params.id, this.task,
+            {
+              headers: {
+              // remove headers
+            }
+            })
+            .then(response => {
+              console.log(response.data);
+              this.rewardInfo = response.data[0];
+              this.url = rewardInfo.picturelink;    
+            })
+            .catch (error => {
+              console.log('aaa');              
+            })
+      },
+      saveEdits() {
+        this.$http.put('http://127.0.0.1:3000/rewards/update', this.rewardInfo,
+            {
+              headers: {
+              // remove headers
+            }
+            })
+            .then(response => {
+              console.log(response.data);
+              this.$router.push('/admin/rewards/');
+                  
+            })
+            .catch (error => {
+              console.log('aaa');              
+            })
+      },
+      
     },
     mounted() {
+    this.showCurrentData();
     }
   };
 </script>
@@ -94,5 +141,28 @@
   margin-top: 24px;
   display: flex;
   justify-content: space-around;
+}
+.picture {
+    
+    width: 300px;
+    height: 300px;
+    border-radius: 5px;
+    
+    margin: 0 auto;
+}
+.opacity {
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 5px;
+}
+.header {
+    color: white;
+    
 }
 </style>

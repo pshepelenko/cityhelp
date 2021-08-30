@@ -14,6 +14,7 @@
         </a>
       </li>
     </b-navbar-nav>
+    <span class="balance">Ваш баланс: {{currentBalance}}  </span>
     <b-navbar-nav class="align-items-center ml-auto ml-md-0">
       
       <base-dropdown menu-on-right
@@ -27,7 +28,7 @@
                     <img alt="Image placeholder" src="img/theme/team-4.jpg">
                   </span>
             <b-media-body class="ml-2 d-none d-lg-block">
-              <span class="mb-0 text-sm  font-weight-bold">Александра Иванова</span>
+              <span class="mb-0 text-sm  font-weight-bold">{{userFullName}}</span>
             </b-media-body>
           </b-media>
         </a>
@@ -85,6 +86,14 @@ export default {
     routeName() {
       const { name } = this.$route;
       return this.capitalizeFirstLetter(name);
+    },
+    userFullName() {
+      let user = JSON.parse(localStorage.getItem('user'));
+      return user.name + ' ' + user.surname;      
+    },
+    currentBalance() {
+      let user = JSON.parse(localStorage.getItem('user'));
+      return user.balance;
     }
   },
   data() {
@@ -108,3 +117,10 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.balance {
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 14px;
+}
+</style>

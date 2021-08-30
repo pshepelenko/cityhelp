@@ -3,7 +3,6 @@
         <b-card-header class="border-0">
             <h3 class="mb-0">Список заданий</h3>
         </b-card-header>
-
         <el-table class="table-responsive table"
                   header-row-class-name="thead-light"
                   :data="tasks">
@@ -12,7 +11,7 @@
                              prop="title"
                              min-width="342px">
                 <template v-slot="{row}">
-                        <router-link :to="'/admin/tasks/'+ row.id" class="font-weight-600 name mb-0 text-sm">{{row.title}}</router-link>                    
+                        <router-link :to="'/admin/tasks/'+ row.taskid" class="font-weight-600 name mb-0 text-sm">{{row.title}}</router-link>                    
                 </template>
             </el-table-column>
 
@@ -26,18 +25,17 @@
                              prop="status">
                 <template v-slot="{row}">
                     <badge class="badge-dot mr-4" type="">
-                        <i :class="`bg-${row.statusType}`"></i>
-                        <span class="status" :class="`text-${row.statusType}`">{{row.status}}</span>
+                        <StatusText :status="row.status"/>
                     </badge>
                 </template>
             </el-table-column>
 
             <el-table-column label="Создан" 
                 min-width="120px"
-                prop="creationDate"
+                prop="creationdate"
                 >
                 <template v-slot="{row}">
-                    {{row.creationDate}}
+                    {{moment(row.creationdate).format('DD/MM/YYYY')}}
                 </template>
             </el-table-column>
 
@@ -46,7 +44,7 @@
                              min-width="110px">
                 <template v-slot="{row}">
                     <div class="d-flex align-items-center">
-                        <span class="completion mr-2">{{row.reportsUnchecked}}</span>                        
+                        <span class="completion mr-2">{{row.reportsunchecked}}</span>                        
                     </div>
                 </template>
             </el-table-column>
@@ -56,58 +54,36 @@
                 >
                 <template v-slot="{row}">
                     <div class="d-flex align-items-center">
-                        <span class="completion mr-2">{{row.reportsTotal}}</span>                        
+                        <span class="completion mr-2">{{row.reportstotal}}</span>                        
                     </div>
                 </template>
             </el-table-column>
         </el-table>
 
         <b-card-footer class="py-4 d-flex justify-content-end">
-            <base-pagination v-model="currentPage" :per-page="10" :total="50"></base-pagination>
         </b-card-footer>
     </b-card>
 </template>
 <script>
   
   import { Table, TableColumn} from 'element-ui'
+  import StatusText from '@/components/StatusText.vue'  
+
   export default {
     name: 'light-table',
+    props: {
+        tasks: []
+    },
     components: {
       [Table.name]: Table,
-      [TableColumn.name]: TableColumn
+      [TableColumn.name]: TableColumn,
+      StatusText,
+    },
+    mounted() {
+        console.log(this.tasks)
     },
     data() {
-      return {
-        tasks: [
-        {
-            category: 'Сбор мусора',
-            title: 'Убрать мусор на улице Московской',
-            creationDate: '22.11.2021',
-            status: 'В работе',
-            statusType: 'warning',
-            reportsUnchecked: 3,
-            reportsTotal: 10
-        },
-        {
-            category: 'Сбор информации',
-            title: 'Опрос по поводу изменения транспортной развязки на ул. Кирова',
-            creationDate: '01.06.2021',
-            status: 'Завершено',
-            statusType: 'success',
-            reportsUnchecked: 0,
-            reportsTotal: 12
-        },
-         {
-            category: 'Сбор мусора',
-            title: 'Сфотографировать состояние дорожного полотна на ул. Мяснцикой',
-            creationDate: '22.11.2021',
-            status: 'Завершено',
-            statusType: 'success',
-            reportsUnchecked: 2,
-            reportsTotal: 8
-        },	
-
-        ],
+      return {        
         currentPage: 1
       };
     }

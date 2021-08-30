@@ -101,6 +101,15 @@ const routes = [
         }
       },
       {
+        path: '/admin/reward/create',
+        name: 'Создать награду',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/admin/RewardCreate.vue'),
+        meta: {
+          admin: true,
+          requiresAuth: true
+        }
+      },
+      {
         path: '/tasks',
         name: 'Задания',
         component: () => import(/* webpackChunkName: "demo" */ '../views/public/PublicTasks'),

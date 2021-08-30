@@ -4,15 +4,22 @@
     <base-header class="pb-6 pb-8 pt-5 pt-md-8 bg-gradient-success" />
     
     <b-container fluid class="mt--7">
-        <b-row class="rewards-list">
-            <b-card-group deck>
-                <b-col sm="12" md="4" v-for="item in rewards" :key="item.id">
-                    <b-card img-src="https://picsum.photos/300/300/?image=41" img-top>
-                        <router-link :to="'/admin/rewards/'+item.id"><b-card-title>  {{item.title}} </b-card-title></router-link>
+        <b-row class="mb-4 ml-1">
+            <b-button to="/admin/reward/create"> Добавить награду </b-button>
+        </b-row>
+        <b-row class="rewards-list" >
+            <b-card-group deck >
+                <b-col sm="12" md="4" v-for="item in rewards" :key="item.rewardid" class="mb-3">
+                    <b-card :img-src="item.picturelink" img-top>
+                        <router-link :to="'/admin/rewards/'+item.rewardid"><b-card-title>  {{item.title}} </b-card-title></router-link>
                         <b-card-text> {{item.description}}</b-card-text>
                         <b-card-text class="card-text"> <div class="topic"> Стоимость </div> {{item.price}} баллов</b-card-text>
-               
-                         <b-button class="mx-auto" :to="'/admin/rewards/'+item.id">Редактировать </b-button>
+                         <b-row class="mt-3">    
+                            <b-button class="mx-auto" :to="'/admin/rewards/'+item.rewardid">Редактировать </b-button>
+                         </b-row>
+                         <b-row class="mt-3">
+                            <b-button class="mx-auto" variant="danger" @click="deleteReward(item.rewardid)">Удалить </b-button>
+                         </b-row>
                     </b-card>
                 </b-col>
             </b-card-group>
@@ -27,12 +34,9 @@
     },
     data() {
       return {
-      }
-    },
-    computed: {
-        rewards() {
-            let array = [
-                {
+          changed: 0,
+          rewards: [
+              {
                     id: '12321',
                     title: 'Билет в театр имени Станиславского',
                     description: 'Билет на любой спектакль театра имени Станиславского в июне 2022 года',
@@ -50,14 +54,37 @@
                     description: 'Купон на скидку в сети "Магнит" дает скидку до 10% и дейставует в течение 3 месяцев',
                     price: 100,
                 }
-                 
-            ];
-            return array;
-        }
+          ],
+      }
     },
     methods: {
+        deleteReward(rewardId) {
+           this.$http.delete('http://127.0.0.1:3000/rewards/' + rewardId,null,
+            {
+                headers: {
+                // remove headers
+                }
+            })
+            .then(response => {
+                this.getrewards();
+            })
+            .catch(error => console.log(error))
+        },        
+        getrewards() {
+            this.$http.get('http://127.0.0.1:3000/rewards/',null,
+            {
+                headers: {
+                // remove headers
+                }
+            })
+            .then(response => {
+                this.rewards = response.data;
+            })
+            .catch(error => console.log(error))
+            }
     },
     mounted() {
+        this.getrewards();
     }
   };
 </script>

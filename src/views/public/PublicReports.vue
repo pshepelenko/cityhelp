@@ -11,17 +11,12 @@
       <b-row class="rewards-list">
             
             <b-card-group deck>
-                <b-col sm="12" md="4" v-for="item in rewards" :key="item.id">
+                <b-col sm="12" md="6" v-for="item in reports" :key="item.reportid">
                     <b-card  img-top>
-                        <b-card-image  > 
-                            <gmap-map :center="{lat: 1.38, lng: 103.8}" :zoom="12" style="width: 100%; height: 250px">
-                              <gmap-polygon :paths="item.paths" :editable="false" >
-                              </gmap-polygon>
-                            </gmap-map>
-                         </b-card-image>
-                        <div class="mt-3" ><router-link  :to="'/tasks/'+item.id"><b-card-title>  {{item.title}} </b-card-title></router-link> </div>
-                        <b-card-text> {{item.description}}</b-card-text>
-                        <b-button :to="'/reports/' + item.id"> Посмотреть отчет </b-button>
+                        <TaskDescription :taskId="item.taskid" />
+                        <b-card-text> <StatusText :status="item.status" /></b-card-text>
+                        
+                        <b-button :to="'/reports/' + item.reportid"> Посмотреть отчет </b-button>
                     </b-card>
                 </b-col>
             </b-card-group>
@@ -39,50 +34,79 @@
   </div>
 </template>
 <script>
-  // Tables
-  import LightTable from "./Tasks/PublicTaskList"; 
+  import StatusText from '@/components/StatusText.vue'; 
+  import TaskDescription from './Reports/TaskDescription.vue';
 
 
 
   export default {
     components: {
-      LightTable          
+      StatusText,
+      TaskDescription          
     },
     data() {
       return {
+        taskDescription: '',
+        reports: [
+                
+                 
+            ],
+        tasks: [
+                
+        ],
       };
     },
     computed: {
-        rewards() {
-            let array = [
-                {
-                    id: '12321',
-                    title: 'Билет в театр имени Станиславского',
-                    description: 'Билет на любой спектакль театра имени Станиславского в июне 2022 года',
-                    paths: [ {lat: 1.380, lng: 103.800}, {lat:1.380, lng: 103.810}, {lat: 1.390, lng: 103.810}, {lat: 1.390, lng: 103.800} ]
-        
-                
-                },
-                {
-                    id: '12321',
-                    title: 'Бесплатная аренда земли',
-                    description: 'Возможность бесплатной аренды 4 соток земли в Солнечногорском районе на срок до 3 лет',
-                    paths: [ {lat: 1.380, lng: 103.800}, {lat:1.380, lng: 103.810}, {lat: 1.390, lng: 103.810}, {lat: 1.390, lng: 103.800} ]
-                },
-                {
-                    id: '12321',
-                    title: 'Скидка в магазинах сети "Магнит"',
-                    description: 'Купон на скидку в сети "Магнит" дает скидку до 10% и дейставует в течение 3 месяцев',
-                    paths: [ {lat: 1.380, lng: 103.800}, {lat:1.380, lng: 103.810}, {lat: 1.390, lng: 103.810}, {lat: 1.390, lng: 103.800} ]
-                }
-                 
-            ];
-            return array;
-        }
+         
+    },
+    directives: {
+      getTaskDescription(taskId) {
+          var i = 0;
+          while (this.tasks[i].taskid != taskId) {
+            i++;
+          }
+          this.taskDescription = this.tasks[i].description;
+          console.log ('this.taskDescription = ' + this.taskDescription)
+      },
+    
     },
     methods: {
+      
+      getTaskInfo (taskId) {
+        this.$http.get('http://127.0.0.1:3000/tasks/' + taskId,null,
+         {
+            headers: {
+              // remove headers
+            }
+          })
+          .then(response => {
+            this.tasks.push(response.data[0]);
+            console.log(response.data[0]);
+          })
+      },
+      getReports() {
+              var userInfo = JSON.parse(localStorage.getItem('user'));
+              console.log('the user id is ' + userInfo.login);
+              this.$http.get('http://127.0.0.1:3000/reports/users/' + userInfo.login,null,
+              {
+                headers: {
+                  // remove headers
+                }
+              })
+              .then(response => {
+                this.reports = response.data;
+                console.log(response.data);
+                var tasks = [];
+                for (var report of response.data) {
+                  tasks.push(report.taskid);
+                  //this.getTaskInfo (report.taskid);                                 
+                }
+                console.log("tasks = " + tasks);
+              })
+      },
     },
     mounted() {
+      this.getReports();
     }
   };
 </script>

@@ -85,6 +85,15 @@
                               :rules="{required: true, min: 6}"
                               v-model="model.password">
                   </base-input>
+                  <base-input alternative
+                              class="mb-3"
+                              prepend-icon="ni ni-lock-circle-open"
+                              placeholder="Подтвердите пароль"
+                              type="password"
+                              name="Password"
+                              :rules="{required: true, min: 6}"
+                              v-model="model.passwordConfirm">
+                  </base-input>
                  
                   <b-row class=" my-4">
                     <b-col cols="12">
@@ -95,6 +104,7 @@
                       </base-input>
                     </b-col>
                   </b-row>
+                  <div class="text-danger" v-if="!passMatchStatus">Введенные пароли не совпадают </div> 
                   <div class="text-center">
                     <b-button type="submit" variant="primary" class="mt-4">Зарегистрироваться</b-button>
                   </div>
@@ -113,11 +123,13 @@
     name: 'register',
     data() {
       return {
+        passMatchStatus: true,
         model: {
           name: '',
           surname: '',
           email: '',
           password: '',
+          passwordConfirm: '',
           agree: false
         }
       }
@@ -125,6 +137,40 @@
     methods: {
       onSubmit() {
         // this will be called only after form is valid. You can do an api call here to register users
+        if (this.model.password === this.model.passwordConfirm)
+        {
+          this.$http.post('http://127.0.0.1:3000/auth/register', 
+            {
+              name: this.model.name,
+              surname: this.model.surname,
+              email: this.model.email,
+              password: this.model.password,
+            },
+            {
+              headers: {
+                // remove headers
+              }
+            })
+            .then(response => {
+              console.log(response.data);
+              let user = {
+                login: this.model.email,
+                admin: false,
+                name: this.model.name,
+                surname: this.model.surname,
+              
+              }
+              localStorage.setItem('user',JSON.stringify(user));
+              this.$router.push('/tasks/');
+            })
+            .catch (error => {
+              console.log('aaa');
+              this.authStatus=false;
+            })
+        } else {
+          this.passMatchStatus = false;
+        }
+
       }
     }
 

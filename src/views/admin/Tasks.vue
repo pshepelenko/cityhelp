@@ -18,7 +18,7 @@
       
        <b-row id="map">
            <gmap-map :center="{lat: 56.18, lng: 36.97}" :zoom="13" style="width: 100%; height: 500px">
-              <gmap-polygon v-for="item in tasks" :key="item.id" :paths="item.paths" :editable="false" @paths_changed="updateEdited($event)" @click="selectTask(item.id)" />
+              <gmap-polygon v-for="item in tasks" :key="item.id" :paths="item.paths" :editable="false" @paths_changed="updateEdited($event)" @click="selectTask(item.taskid)" @mouseover="showinfo(item.taskid)"/>
               
             </gmap-map>
 
@@ -26,7 +26,7 @@
       
       
       <b-row class="mt-5">
-        <light-table />
+        <light-table :tasks="tasks"/>
       </b-row>
       
       <!--End tables-->
@@ -35,11 +35,6 @@
   </div>
 </template>
 <script>
-  // Charts
-  import * as chartConfigs from '@/components/Charts/config';
-  import LineChart from '@/components/Charts/LineChart';
-  import BarChart from '@/components/Charts/BarChart';
-
   // Components
   import BaseProgress from '@/components/BaseProgress';
   import StatsCard from '@/components/Cards/StatsCard';
@@ -51,10 +46,7 @@
 
   export default {
     components: {
-      LineChart,
-      BarChart,
       BaseProgress,
-      StatsCard,
       LightTable          
     },
     data() {
@@ -64,65 +56,39 @@
           
           {
             id: 1,
-            paths:  [ {lat: 56.18, lng: 36.97},  {lat: 56.18, lng: 36.98}, {lat:56.187, lng: 36.98}, {lat: 56.187, lng: 36.97} ],
+            paths:  [  ],
           },
           {
             id: 2,
-            paths: [ {lat: 56.17, lng: 36.96}, {lat: 56.17, lng: 36.95}, {lat: 56.16, lng: 36.95}, {lat: 56.16, lng: 36.96} ]
+            paths: [ ]
           }
         ],    
         
-        bigLineChart: {
-          allData: [
-            [0, 20, 10, 30, 15, 40, 20, 60, 60],
-            [0, 20, 5, 25, 10, 30, 15, 40, 40]
-          ],
-          activeIndex: 0,
-          chartData: {
-            datasets: [
-              {
-                label: 'Performance',
-                data: [0, 20, 10, 30, 15, 40, 20, 60, 60],
-              }
-            ],
-            labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          },
-          extraOptions: chartConfigs.blueChartOptions,
-        },
-        redBarChart: {
-          chartData: {
-            labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-              label: 'Sales',
-              data: [25, 20, 30, 22, 17, 29]
-            }]
-          },
-          extraOptions: chartConfigs.blueChartOptions
-        }
       };
     },
-    methods: {
-      initBigChart(index) {
-        let chartData = {
-          datasets: [
-            {
-              label: 'Performance',
-              data: this.bigLineChart.allData[index]
+    mounted() {
+        this.$http.get('http://127.0.0.1:3000/tasks/',null,
+         {
+            headers: {
+              // remove headers
             }
-          ],
-          labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        };
-        this.bigLineChart.chartData = chartData;
-        this.bigLineChart.activeIndex = index;
-      },
+          })
+          .then(response => {
+            this.tasks = response.data;
+          })
+        
+    },
+    methods: {
+      
       selectTask(taskId) {
               console.log('Task is selected, id=' + taskId);
               this.$router.push('/admin/tasks/' + taskId);
+      },
+      showInfo(taskId) {
+        console.log('it works' + taskId);
       }
     },
-    mounted() {
-      this.initBigChart(0);
-    }
+    
   };
 </script>
 <style>
