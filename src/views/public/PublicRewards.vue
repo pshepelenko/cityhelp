@@ -57,7 +57,7 @@
         getActiveRewards() {
               var userInfo = JSON.parse(localStorage.getItem('user'));
               console.log('the user id is ' + userInfo.login);
-              this.$http.get('http://127.0.0.1:3000/rewards/active/users/' + userInfo.login,null,
+              this.$http.get('api/rewards/active/users/' + userInfo.login,null,
               {
                 headers: {
                   // remove headers
@@ -71,7 +71,7 @@
       getAvailableRewards() {
               var userInfo = JSON.parse(localStorage.getItem('user'));
               console.log('the user id is ' + userInfo.login);
-              this.$http.get('http://127.0.0.1:3000/rewards/available/users/' + userInfo.login,null,
+              this.$http.get('api/rewards/available/users/' + userInfo.login,null,
               {
                 headers: {
                   // remove headers

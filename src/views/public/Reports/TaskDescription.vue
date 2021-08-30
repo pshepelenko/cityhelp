@@ -20,7 +20,7 @@ export default {
     methods:
     {
         getTaskInfo () {
-        this.$http.get('http://127.0.0.1:3000/tasks/' + this.taskId,null,
+        this.$http.get('api/tasks/' + this.taskId,null,
          {
             headers: {
               // remove headers

@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <base-header class="pb-6 pb-8 pt-5 pt-md-8 bg-gradient-success">
+    <base-header class="pb-5  pt-3 pt-md-8 bg-gradient-success">
       <!-- Card stats -->
       <b-row class="active-tasks-list">
             <div class="header-first"> Выбранные задания </div>
@@ -24,7 +24,7 @@
     
     <!--Tables-->
 
-    <b-row class="mt--6 mb-3 ml-4">
+    <b-row class="mt--5 mb-3 ml-4">
         <b-col class="section-header"> Задания на карте </b-col>
         
       </b-row>
@@ -96,7 +96,7 @@
       getActiveTasks() {
               var userInfo = JSON.parse(localStorage.getItem('user'));
               console.log('the user id is ' + userInfo.login);
-              this.$http.get('http://127.0.0.1:3000/tasks/active/users/' + userInfo.login,null,
+              this.$http.get('api/tasks/active/users/' + userInfo.login,null,
               {
                 headers: {
                   // remove headers
@@ -110,7 +110,7 @@
       getAvailableTasks() {
               var userInfo = JSON.parse(localStorage.getItem('user'));
               console.log('the user id is ' + userInfo.login);
-              this.$http.get('http://127.0.0.1:3000/tasks/available/users/' + userInfo.login,null,
+              this.$http.get('api/tasks/available/users/' + userInfo.login,null,
               {
                 headers: {
                   // remove headers

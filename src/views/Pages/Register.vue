@@ -139,7 +139,7 @@
         // this will be called only after form is valid. You can do an api call here to register users
         if (this.model.password === this.model.passwordConfirm)
         {
-          this.$http.post('http://127.0.0.1:3000/auth/register', 
+          this.$http.post('api/auth/register', 
             {
               name: this.model.name,
               surname: this.model.surname,

@@ -73,7 +73,7 @@
     methods: {
       
       getTaskInfo (taskId) {
-        this.$http.get('http://127.0.0.1:3000/tasks/' + taskId,null,
+        this.$http.get('api/tasks/' + taskId,null,
          {
             headers: {
               // remove headers
@@ -87,7 +87,7 @@
       getReports() {
               var userInfo = JSON.parse(localStorage.getItem('user'));
               console.log('the user id is ' + userInfo.login);
-              this.$http.get('http://127.0.0.1:3000/reports/users/' + userInfo.login,null,
+              this.$http.get('api/reports/users/' + userInfo.login,null,
               {
                 headers: {
                   // remove headers

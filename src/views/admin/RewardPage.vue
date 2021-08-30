@@ -84,7 +84,7 @@
       },
       
       showCurrentData() { 
-        this.$http.get('http://127.0.0.1:3000/rewards/'+this.$route.params.id, this.task,
+        this.$http.get('api/rewards/'+this.$route.params.id, this.task,
             {
               headers: {
               // remove headers
@@ -100,7 +100,7 @@
             })
       },
       saveEdits() {
-        this.$http.put('http://127.0.0.1:3000/rewards/update', this.rewardInfo,
+        this.$http.put('api/rewards/update', this.rewardInfo,
             {
               headers: {
               // remove headers

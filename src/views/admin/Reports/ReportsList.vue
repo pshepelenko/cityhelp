@@ -88,7 +88,7 @@
     },
     methods: {
         getParticularReports(taskId) {
-        this.$http.get('http://127.0.0.1:3000/reports/tasks/' + taskId,null,
+        this.$http.get('api/reports/tasks/' + taskId,null,
          {
             headers: {
               // remove headers
@@ -104,7 +104,7 @@
           })
         },
         getTaskTitle(taskId) {
-            this.$http.get('http://127.0.0.1:3000/tasks/' + taskId,null,
+            this.$http.get('api/tasks/' + taskId,null,
          {
             headers: {
               // remove headers
@@ -118,7 +118,7 @@
           })        
         },
         getAllReports() {
-        this.$http.get('http://127.0.0.1:3000/reports/',null,
+        this.$http.get('api/reports/',null,
          {
             headers: {
               // remove headers

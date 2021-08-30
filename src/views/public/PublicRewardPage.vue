@@ -44,7 +44,7 @@
     methods: {
       buyReward() {
          let user = JSON.parse(localStorage.getItem('user'));
-         this.$http.post('http://127.0.0.1:3000/rewards/buy', {rewardId: this.rewardInfo.rewardid, userId: user.login},
+         this.$http.post('api/rewards/buy', {rewardId: this.rewardInfo.rewardid, userId: user.login},
           {
             headers: {
             // remove headers
@@ -66,7 +66,7 @@
       getRewardData() {
               var userInfo = JSON.parse(localStorage.getItem('user'));
               console.log('the user id is ' + userInfo.login);
-              this.$http.get('http://127.0.0.1:3000/rewards/active/users/' + userInfo.login,null,
+              this.$http.get('api/rewards/active/users/' + userInfo.login,null,
               {
                 headers: {
                   // remove headers
@@ -79,7 +79,7 @@
                   this.rewardsList.push(item.rewardid)
                 }
                 console.log(this.rewardsList);
-                this.$http.get('http://127.0.0.1:3000/rewards/' + this.$route.params.id,null,
+                this.$http.get('api/rewards/' + this.$route.params.id,null,
                   {
                       headers: {
                         // remove headers

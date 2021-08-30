@@ -14,6 +14,14 @@ module.exports = {
       }
     }
   },
+  outputDir: (__dirname, './server/public'),
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:3000',
+      }
+    }
+  },
   css: {
     // Enable CSS source maps.
     sourceMap: process.env.NODE_ENV !== 'production'

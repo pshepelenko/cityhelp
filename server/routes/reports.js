@@ -125,7 +125,7 @@ router.post('/create', upload.array('uploads',15), function(req, res, next) {
     //var port = normalizePort(process.env.PORT || '3000');
     var pictureLinks = []; 
     for (let file of req.files) {
-        pictureLinks.push(req.protocol + '://' + req.get('host') + '/pictures/reports/' + file.filename)
+        pictureLinks.push(req.protocol + '://' + req.get('host') + '/api/pictures/reports/' + file.filename)
     }
     //pictureLink = req.protocol + '://' + req.get('host') + '/pictures/' + req.files[0].filename;
     let ts = Date.now();

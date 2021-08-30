@@ -68,7 +68,7 @@ router.post('/create', upload.single('picture'), function(req, res, next) {
     console.log(req.file);
     console.log(req.body);
     //var port = normalizePort(process.env.PORT || '3000');
-    pictureLink = req.protocol + '://' + req.get('host') + '/pictures/' + req.file.filename;
+    pictureLink = req.protocol + '://' + req.get('host') + '/api/pictures/' + req.file.filename;
     
     const query = "INSERT INTO rewards (title, description, price, picturelink) VALUES ('" + req.body.title + "','" + req.body.description + "','" + req.body.price + "','" + pictureLink +  "');";
     console.log(query);

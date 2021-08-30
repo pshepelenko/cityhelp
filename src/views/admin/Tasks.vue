@@ -67,7 +67,7 @@
       };
     },
     mounted() {
-        this.$http.get('http://127.0.0.1:3000/tasks/',null,
+        this.$http.get('api/tasks/',null,
          {
             headers: {
               // remove headers

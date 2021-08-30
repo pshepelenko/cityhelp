@@ -7,6 +7,7 @@ const cors = require('cors');
 var bodyParser = require('body-parser');
 
 
+var app = express();
 
 
 var indexRouter = require('./routes/index');
@@ -18,7 +19,6 @@ var rewardRouter = require('./routes/rewards');
 var statisticsRouter = require('./routes/statistics');
 var picturesRouter = require('./routes/pictures');
 
-var app = express();
 
 
 app.use(cors());
@@ -30,14 +30,26 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json({limit:'50mb'})); 
 app.use(bodyParser.urlencoded({extended:true, limit:'50mb'})); 
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/auth', authRouter);
-app.use('/tasks', tasksRouter);
-app.use('/reports', reportRouter);
-app.use('/rewards', rewardRouter);
-app.use('/statistics', statisticsRouter);
-app.use('/pictures', picturesRouter);
+app.use('/api/', indexRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/tasks', tasksRouter);
+app.use('/api/reports', reportRouter);
+app.use('/api/rewards', rewardRouter);
+app.use('/api/statistics', statisticsRouter);
+app.use('/api/pictures', picturesRouter);
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(__dirname + '/public/'));
+
+  app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'));
+}
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => console.log(`Server started on port ${port}`));
+
+
 
 global.__basedir = __dirname;
 

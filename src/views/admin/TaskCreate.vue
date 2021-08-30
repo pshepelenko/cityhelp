@@ -120,7 +120,7 @@
             
             this.task.finalPaths = JSON.stringify(this.task.finalPaths);
             console.log(this.task);
-            this.$http.post('http://127.0.0.1:3000/tasks/create', this.task,
+            this.$http.post('api/tasks/create', this.task,
             {
               headers: {
               // remove headers

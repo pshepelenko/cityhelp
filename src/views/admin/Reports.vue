@@ -89,7 +89,7 @@
           labels: [],
             
         };
-        this.$http.get('http://127.0.0.1:3000/statistics/',{},
+        this.$http.get('api/statistics/',{},
          {
             headers: {
               // remove headers

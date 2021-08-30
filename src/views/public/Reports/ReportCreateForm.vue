@@ -56,7 +56,7 @@ export default {
     getActiveTasks() {
               var userInfo = JSON.parse(localStorage.getItem('user'));
               console.log('the user id is ' + userInfo.login);
-              this.$http.get('http://127.0.0.1:3000/tasks/active/users/' + userInfo.login,null,
+              this.$http.get('api/tasks/active/users/' + userInfo.login,null,
               {
                 headers: {
                   // remove headers
@@ -85,7 +85,7 @@ export default {
           console.log(pair[0]+ ', ' + pair[1]); 
         }
 
-        this.$http.post('http://127.0.0.1:3000/reports/create', data,
+        this.$http.post('api/reports/create', data,
             {
               headers: {
                'Content-Type': 'multipart/form-data',

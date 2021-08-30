@@ -106,7 +106,7 @@
     },
     methods: {
       onSubmit() {
-        this.$http.post('http://127.0.0.1:3000/auth/login', 
+        this.$http.post('api/auth/login', 
            {
              login: this.model.email,
              password: this.model.password,

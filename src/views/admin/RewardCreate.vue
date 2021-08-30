@@ -91,7 +91,7 @@
           console.log(pair[0]+ ', ' + pair[1]); 
         }
 
-        this.$http.post('http://127.0.0.1:3000/rewards/create', data,
+        this.$http.post('api/rewards/create', data,
             {
               headers: {
                'Content-Type': 'multipart/form-data',

@@ -59,7 +59,7 @@
     },
     methods: {
         deleteReward(rewardId) {
-           this.$http.delete('http://127.0.0.1:3000/rewards/' + rewardId,null,
+           this.$http.delete('api/rewards/' + rewardId,null,
             {
                 headers: {
                 // remove headers
@@ -71,7 +71,7 @@
             .catch(error => console.log(error))
         },        
         getrewards() {
-            this.$http.get('http://127.0.0.1:3000/rewards/',null,
+            this.$http.get('api/rewards/',null,
             {
                 headers: {
                 // remove headers

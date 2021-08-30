@@ -72,7 +72,7 @@
     },
     methods: {
       approveReport(reportId) {
-        this.$http.post('http://127.0.0.1:3000/reports/approve', {reportId: reportId},
+        this.$http.post('api/reports/approve', {reportId: reportId},
           {
             headers: {
             // remove headers
@@ -86,7 +86,7 @@
           })  
       },
       rejectReport(reportId) {
-        this.$http.post('http://127.0.0.1:3000/reports/reject', {reportId: reportId},
+        this.$http.post('api/reports/reject', {reportId: reportId},
           {
             headers: {
             // remove headers
@@ -101,7 +101,7 @@
       }
     },
     mounted() {
-      this.$http.get('http://127.0.0.1:3000/reports/' + this.$route.params.id,null,
+      this.$http.get('api/reports/' + this.$route.params.id,null,
          {
             headers: {
               // remove headers

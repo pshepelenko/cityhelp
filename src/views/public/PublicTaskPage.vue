@@ -39,7 +39,7 @@
     
     methods: {
       getTaskInfo () {
-        this.$http.get('http://127.0.0.1:3000/tasks/' + this.$route.params.id,null,
+        this.$http.get('api/tasks/' + this.$route.params.id,null,
          {
             headers: {
               // remove headers
@@ -51,7 +51,7 @@
           })
       },
       getTaskStatus (userId, taskId) {
-        this.$http.get('http://127.0.0.1:3000/users/' + userId + '/tasks/' + taskId,null,
+        this.$http.get('api/users/' + userId + '/tasks/' + taskId,null,
          {
             headers: {
               // remove headers
@@ -63,7 +63,7 @@
           })
       },
       subscribe(userId, taskId) {
-        this.$http.post('http://127.0.0.1:3000/tasks/subscribe', {taskId: taskId, userId: userId},
+        this.$http.post('api/tasks/subscribe', {taskId: taskId, userId: userId},
           {
             headers: {
             // remove headers
@@ -78,7 +78,7 @@
           })
       },
       unSubscribe(userId, taskId) {
-          this.$http.post('http://127.0.0.1:3000/tasks/unsubscribe', {taskId: taskId, userId: userId},
+          this.$http.post('api/tasks/unsubscribe', {taskId: taskId, userId: userId},
           {
             headers: {
             // remove headers

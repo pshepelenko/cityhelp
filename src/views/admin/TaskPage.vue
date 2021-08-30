@@ -59,7 +59,7 @@
       
     },
     mounted() {
-        this.$http.get('http://127.0.0.1:3000/tasks/' + this.$route.params.id,null,
+        this.$http.get('api/tasks/' + this.$route.params.id,null,
          {
             headers: {
               // remove headers
@@ -73,7 +73,7 @@
     methods: {
       startTask(taskID) {
         console.log('taskid=' + taskID);
-        this.$http.post('http://127.0.0.1:3000/tasks/start', {taskID: taskID},
+        this.$http.post('api/tasks/start', {taskID: taskID},
           {
             headers: {
             // remove headers
@@ -89,7 +89,7 @@
       },
       stopTask(taskID) {
         console.log('taskid=' + taskID);
-        this.$http.post('http://127.0.0.1:3000/tasks/stop', {taskID: taskID},
+        this.$http.post('api/tasks/stop', {taskID: taskID},
           {
             headers: {
             // remove headers

@@ -67,7 +67,7 @@
     methods: {
       deleteReport() {
         var user = JSON.parse(localStorage.getItem('user'));
-        this.$http.post('http://127.0.0.1:3000/reports/delete', {reportId: this.reportInfo.reportid, taskId: this.reportInfo.taskid, userId: user.login },
+        this.$http.post('api/reports/delete', {reportId: this.reportInfo.reportid, taskId: this.reportInfo.taskid, userId: user.login },
           {
             headers: {
             // remove headers
@@ -83,7 +83,7 @@
       
     },
     mounted() {
-      this.$http.get('http://127.0.0.1:3000/reports/' + this.$route.params.id,null,
+      this.$http.get('api/reports/' + this.$route.params.id,null,
          {
             headers: {
               // remove headers
